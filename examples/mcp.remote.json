@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "gomodelhub-3d": {
+      "url": "https://login.gomodelhub.com/mcp/3d",
+      "headers": {
+        "Authorization": "Bearer gk-replace-with-your-platform-key"
+      }
+    }
+  }
+}
