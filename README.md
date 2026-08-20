@@ -96,26 +96,6 @@ Supports jpg / png / webp, max 50MB per file.
 
 ---
 
-## Local debugging
-
-```powershell
-$env:GOMODELHUB_BASE_URL = "https://login.gomodelhub.com"
-$env:GOMODELHUB_API_KEY = "gk-xxxx"
-npm run inspector
-```
-
-## Deploy Remote MCP (platform ops)
-
-On the server, after `npm install`, run the HTTP service (default `127.0.0.1:3110`, path `/mcp/3d`):
-
-```bash
-GOMODELHUB_BASE_URL=http://127.0.0.1:8888 npm run start:http
-```
-
-Expose via Nginx at `https://login.gomodelhub.com/mcp/3d`. Health check: `GET /mcp/3d/health`.
-
----
-
 ## Troubleshooting
 
 | Symptom | Fix |

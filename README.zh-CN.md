@@ -96,26 +96,6 @@ macOS/Linux：`bash scripts/install-global.sh`
 
 ---
 
-## 本地调试
-
-```powershell
-$env:GOMODELHUB_BASE_URL = "https://login.gomodelhub.com"
-$env:GOMODELHUB_API_KEY = "gk-xxxx"
-npm run inspector
-```
-
-## 平台部署 Remote MCP
-
-服务器上 `npm install` 后运行 HTTP 服务（默认 `127.0.0.1:3110`，路径 `/mcp/3d`）：
-
-```bash
-GOMODELHUB_BASE_URL=http://127.0.0.1:8888 npm run start:http
-```
-
-经 Nginx 反代到 `https://login.gomodelhub.com/mcp/3d`。健康检查：`GET /mcp/3d/health`。
-
----
-
 ## 故障排查
 
 | 现象 | 处理 |
