@@ -52,6 +52,15 @@ function extractApiKey(req) {
   return "";
 }
 
+function extractDefaultModel(req) {
+  const fromHeader = req.headers["x-gomodelhub-default-model"];
+  if (typeof fromHeader === "string" && fromHeader.trim()) {
+    return fromHeader.trim();
+  }
+  const fromEnv = process.env.GOMODELHUB_DEFAULT_MODEL;
+  return typeof fromEnv === "string" ? fromEnv.trim() : "";
+}
+
 async function handleMcpPost(req, res) {
   const apiKey = extractApiKey(req);
   if (!apiKey) {
@@ -65,7 +74,10 @@ async function handleMcpPost(req, res) {
     return jsonRpcError(res, 500, e instanceof Error ? e.message : String(e), -32603);
   }
 
-  const server = createGoModelHub3dMcpServer(client, { remote: true });
+  const server = createGoModelHub3dMcpServer(client, {
+    remote: true,
+    defaultModel: extractDefaultModel(req),
+  });
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
   });

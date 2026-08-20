@@ -2,7 +2,7 @@
 /**
  * GoModelHub 3D MCP — stdio (local) mode
  *
- * Env: GOMODELHUB_BASE_URL, GOMODELHUB_API_KEY
+ * Env: GOMODELHUB_BASE_URL, GOMODELHUB_API_KEY, GOMODELHUB_DEFAULT_MODEL
  * Optional file: ~/.gomodelhub/3d-mcp.json
  */
 
@@ -26,15 +26,19 @@ async function main() {
   }
 
   const cfgSource = runtimeConfig.configFile ? `file=${runtimeConfig.configFile}` : "env";
+  const modelHint = runtimeConfig.defaultModel ? ` defaultModel=${runtimeConfig.defaultModel}` : "";
   console.error(
-    `[gomodelhub-3d-mcp] stdio base=${runtimeConfig.baseUrl} key=set (${cfgSource})`
+    `[gomodelhub-3d-mcp] stdio base=${runtimeConfig.baseUrl} key=set${modelHint} (${cfgSource})`
   );
 
   const client = new ApiClient({
     baseUrl: runtimeConfig.baseUrl,
     apiKey: runtimeConfig.apiKey,
   });
-  const server = createGoModelHub3dMcpServer(client, { remote: false });
+  const server = createGoModelHub3dMcpServer(client, {
+    remote: false,
+    defaultModel: runtimeConfig.defaultModel,
+  });
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }

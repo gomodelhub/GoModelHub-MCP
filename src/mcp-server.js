@@ -5,22 +5,33 @@ import { ApiClient, textResult, errorResult } from "./api-client.js";
 const IMAGE_INPUT_DESC =
   "Local image file path for image-to-3D (stdio MCP only). Prefer image URL on Remote MCP. Max 50MB, jpg/png/webp.";
 
-const MCP_VERSION = "1.3.0";
+const MCP_VERSION = "1.3.1";
+
+function resolveModel(model, defaultModel) {
+  const chosen = (model ?? "").trim() || (defaultModel ?? "").trim();
+  if (!chosen) {
+    throw new Error(
+      "model is required. Set GOMODELHUB_DEFAULT_MODEL in mcp.json (local env or Remote header X-GoModelHub-Default-Model), or pass model in the tool call."
+    );
+  }
+  return chosen;
+}
 
 /**
  * @param {ApiClient} client
- * @param {{ remote?: boolean }} options
+ * @param {{ remote?: boolean, defaultModel?: string }} options
  */
 export function createGoModelHub3dMcpServer(client, options = {}) {
   const remote = Boolean(options.remote);
   const allowLocalImage = !remote;
+  const defaultModel = (options.defaultModel ?? "").trim();
+
+  const modelDesc = defaultModel
+    ? `3D modelCode (optional if GOMODELHUB_DEFAULT_MODEL is set to ${defaultModel}). Override per call when needed.`
+    : "3D modelCode from marketplace (modelType=3d), e.g. hyper3d, neural4d, v3.1-20260211. Do NOT add tp- prefix.";
 
   const toolInputShape = {
-    model: z
-      .string()
-      .describe(
-        "3D modelCode from marketplace (modelType=3d), e.g. hyper3d, neural4d, v3.1-20260211. Do NOT add tp- prefix."
-      ),
+    model: z.string().optional().describe(modelDesc),
     prompt: z.string().optional().describe("Text prompt. Required unless image or imagePath is set."),
     image: z.string().optional().describe("Public https image URL for image-to-3D (JSON submit)."),
     mode: z.string().optional().describe("Optional mode: text or image."),
@@ -49,8 +60,9 @@ export function createGoModelHub3dMcpServer(client, options = {}) {
     toolInputShape,
     async ({ model, prompt, image, imagePath, mode, options }) => {
       try {
+        const modelCode = resolveModel(model, defaultModel);
         const { data, submitMode, uploadedImage } = await client.submit3dJob({
-          model,
+          model: modelCode,
           prompt,
           image,
           imagePath,
@@ -119,8 +131,9 @@ export function createGoModelHub3dMcpServer(client, options = {}) {
       timeoutSec,
     }) => {
       try {
+        const modelCode = resolveModel(model, defaultModel);
         const { data: submitted, submitMode, uploadedImage } = await client.submit3dJob({
-          model,
+          model: modelCode,
           prompt,
           image,
           imagePath,

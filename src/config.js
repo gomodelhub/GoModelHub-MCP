@@ -49,8 +49,9 @@ function pickString(...values) {
 
 /**
  * Resolve credentials from env (highest priority) then optional config file.
- * Env: GOMODELHUB_BASE_URL / GOMODELHUB_API_KEY (legacy AIDEMO_* supported)
- * File (~/.gomodelhub/3d-mcp.json): baseUrl + apiKey
+ * Env: GOMODELHUB_BASE_URL / GOMODELHUB_API_KEY / GOMODELHUB_DEFAULT_MODEL
+ *      (legacy AIDEMO_* supported for base URL and API key)
+ * File (~/.gomodelhub/3d-mcp.json): baseUrl, apiKey, defaultModel
  */
 export function loadConfig() {
   const fromFile = readConfigFile();
@@ -71,9 +72,16 @@ export function loadConfig() {
     fromFile?.parsed?.AIDEMO_API_KEY
   );
 
+  const defaultModel = pickString(
+    process.env.GOMODELHUB_DEFAULT_MODEL,
+    fromFile?.parsed?.defaultModel,
+    fromFile?.parsed?.GOMODELHUB_DEFAULT_MODEL
+  );
+
   return {
     baseUrl,
     apiKey,
+    defaultModel,
     configFile: fromFile?.file || null,
   };
 }

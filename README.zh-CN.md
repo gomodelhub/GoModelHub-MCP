@@ -8,9 +8,22 @@ GoModelHub 3D 生成 API 的 MCP 服务，供 **Cursor** 等 Agent 以自然语�
 | `get_3d_status` | 查询任务状态 |
 | `generate_3d_and_wait` | 提交并轮询至完成（推荐） |
 
-需要 **Node.js 18+** 与平台 API Key（`gk-` / `sk-`）。
+需要 **Node.js 18+**、平台 API Key（`gk-` / `sk-`），以及模型市场中的 **modelCode**（如 `hyper3d`）。
+
+在 `mcp.json` 里配置默认模型后，对话里不必每次指定 `model`；单次任务仍可在 tool 调用里覆盖。
 
 [English](./README.md)
+
+---
+
+## 在 `mcp.json` 配置默认模型
+
+| 方式 | 配置位置 | 示例 |
+|------|----------|------|
+| Remote MCP | `headers` | `"X-GoModelHub-Default-Model": "hyper3d"` |
+| 本地 MCP | `env` | `"GOMODELHUB_DEFAULT_MODEL": "hyper3d"` |
+
+填模型市场中该 Key 可用的 modelCode，不要加 `tp-` 前缀。
 
 ---
 
@@ -26,7 +39,8 @@ Cursor → Settings → MCP → 编辑 `mcp.json`：
     "gomodelhub-3d": {
       "url": "https://login.gomodelhub.com/mcp/3d",
       "headers": {
-        "Authorization": "Bearer gk-你的平台Key"
+        "Authorization": "Bearer gk-你的平台Key",
+        "X-GoModelHub-Default-Model": "hyper3d"
       }
     }
   }
@@ -62,7 +76,8 @@ macOS/Linux：`bash scripts/install-global.sh`
       "command": "gomodelhub-3d-mcp",
       "env": {
         "GOMODELHUB_BASE_URL": "https://login.gomodelhub.com",
-        "GOMODELHUB_API_KEY": "gk-你的平台Key"
+        "GOMODELHUB_API_KEY": "gk-你的平台Key",
+        "GOMODELHUB_DEFAULT_MODEL": "hyper3d"
       }
     }
   }
@@ -102,6 +117,7 @@ macOS/Linux：`bash scripts/install-global.sh`
 |------|------|
 | disconnected | 确认已全局安装，终端能找到 `gomodelhub-3d-mcp` |
 | Missing GOMODELHUB_BASE_URL | 检查 `mcp.json` 的 `env` |
+| model is required | 配置 `GOMODELHUB_DEFAULT_MODEL` / `X-GoModelHub-Default-Model`，或在 tool 里传 `model` |
 | HTTP 401 / 403 | Key 无效或额度不足 |
 | Remote 图生失败 | 勿用 `imagePath`，改用公网 `image` URL 或本地 MCP |
 

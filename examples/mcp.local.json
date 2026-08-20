@@ -4,7 +4,8 @@
       "command": "gomodelhub-3d-mcp",
       "env": {
         "GOMODELHUB_BASE_URL": "https://login.gomodelhub.com",
-        "GOMODELHUB_API_KEY": "gk-replace-with-your-platform-key"
+        "GOMODELHUB_API_KEY": "gk-replace-with-your-platform-key",
+        "GOMODELHUB_DEFAULT_MODEL": "hyper3d"
       }
     }
   }

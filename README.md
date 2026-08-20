@@ -8,9 +8,22 @@ MCP server for the GoModelHub 3D generation API. Use it in **Cursor** and other 
 | `get_3d_status` | Poll task status once |
 | `generate_3d_and_wait` | Submit and poll until done (recommended) |
 
-Requires **Node.js 18+** and a platform API Key (`gk-` / `sk-`).
+Requires **Node.js 18+**, a platform API Key (`gk-` / `sk-`), and a **modelCode** from Model Marketplace (e.g. `hyper3d`).
+
+Set your default model once in `mcp.json` so Agents do not need to pass `model` every time. You can still override `model` in a single call when needed.
 
 [中文文档](./README.zh-CN.md)
+
+---
+
+## Default model in `mcp.json`
+
+| Mode | Where to set | Example |
+|------|----------------|---------|
+| Remote MCP | `headers` | `"X-GoModelHub-Default-Model": "hyper3d"` |
+| Local MCP | `env` | `"GOMODELHUB_DEFAULT_MODEL": "hyper3d"` |
+
+Use the modelCode shown in Model Marketplace for your Key (do not add a `tp-` prefix).
 
 ---
 
@@ -26,7 +39,8 @@ Cursor → Settings → MCP → edit `mcp.json`:
     "gomodelhub-3d": {
       "url": "https://login.gomodelhub.com/mcp/3d",
       "headers": {
-        "Authorization": "Bearer gk-your-platform-key"
+        "Authorization": "Bearer gk-your-platform-key",
+        "X-GoModelHub-Default-Model": "hyper3d"
       }
     }
   }
@@ -62,7 +76,8 @@ Verify: `where gomodelhub-3d-mcp` (Windows) or `which gomodelhub-3d-mcp`.
       "command": "gomodelhub-3d-mcp",
       "env": {
         "GOMODELHUB_BASE_URL": "https://login.gomodelhub.com",
-        "GOMODELHUB_API_KEY": "gk-your-platform-key"
+        "GOMODELHUB_API_KEY": "gk-your-platform-key",
+        "GOMODELHUB_DEFAULT_MODEL": "hyper3d"
       }
     }
   }
@@ -102,6 +117,7 @@ Supports jpg / png / webp, max 50MB per file.
 |---------|-----|
 | disconnected | Run global install; ensure `gomodelhub-3d-mcp` is on PATH |
 | Missing GOMODELHUB_BASE_URL | Check `env` in `mcp.json` |
+| model is required | Add `GOMODELHUB_DEFAULT_MODEL` / `X-GoModelHub-Default-Model`, or pass `model` in the tool call |
 | HTTP 401 / 403 | Invalid key or insufficient quota |
 | Remote image-to-3D fails | Do not use `imagePath`; use public `image` URL or local MCP |
 
