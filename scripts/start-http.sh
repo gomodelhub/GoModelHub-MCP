@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 生产环境启动脚本（配合 PM2 或手动运行）
+# 生產環境啟動腳本（搭配 PM2 或手動執行）
 set -euo pipefail
 cd "$(dirname "$0")"
 

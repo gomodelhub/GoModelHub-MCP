@@ -1,37 +1,48 @@
 # GoModelHub 3D MCP
 
-MCP server for the GoModelHub 3D generation API. Use it in **Cursor** and other Agents with natural language.
+MCP server for the GoModelHub 3D generation API — use it in **Cursor** and other AI Agents with natural language.
 
-| Tool | Description |
-|------|-------------|
-| `generate_3d` | Submit a 3D job; returns `taskId` |
-| `get_3d_status` | Poll task status once |
-| `generate_3d_and_wait` | Submit and poll until done (recommended) |
-
-Requires **Node.js 18+**, a platform API Key (`gk-` / `sk-`), and a **modelCode** from Model Marketplace (e.g. `hyper3d`).
-
-Set your default model once in `mcp.json` so Agents do not need to pass `model` every time. You can still override `model` in a single call when needed.
-
-[中文文档](./README.zh-CN.md)
+[English](./README.md) · [中文文檔](./README.zh-TW.md) · [日本語](./README.ja.md) · [Deutsch](./README.de.md) · [Report Bug](https://github.com/kelouer/GoModelHub-MCP/issues) · [Deploy Guide](./DEPLOY-BAOTA.md)
 
 ---
 
-## Default model in `mcp.json`
+## Features
 
-| Mode | Where to set | Example |
-|------|----------------|---------|
+- **Zero-config Remote MCP** — Streamable HTTP, no local install needed
+- **Local stdio MCP** — supports local `imagePath` for image-to-3D
+- **3 Tools** — `generate_3d`, `get_3d_status`, `generate_3d_and_wait`
+- **Cross-platform** — Windows / macOS / Linux
+
+## Tools
+
+| Tool | Description |
+|:-----|:------------|
+| `generate_3d` | Submit a 3D job; returns `taskId` |
+| `get_3d_status` | Poll task status |
+| `generate_3d_and_wait` | Submit and poll until done (recommended) |
+
+## Prerequisites
+
+- **Node.js 18+**
+- Platform API Key (`gk-` / `sk-`) — get it from [GoModelHub](https://login.gomodelhub.com)
+- **modelCode** from Model Marketplace (e.g. `hyper3d`)
+
+---
+
+## Default Model
+
+| Mode | Where | Example |
+|:-----|:------|:--------|
 | Remote MCP | `headers` | `"X-GoModelHub-Default-Model": "hyper3d"` |
 | Local MCP | `env` | `"GOMODELHUB_DEFAULT_MODEL": "hyper3d"` |
 
-Use the modelCode shown in Model Marketplace for your Key (do not add a `tp-` prefix).
+Use the modelCode shown in Model Marketplace (no `tp-` prefix).
 
 ---
 
 ## Option 1: Remote MCP (recommended, zero install)
 
-**Limitation:** Remote MCP does **not** support local `imagePath`. For image-to-3D, use a public `image` URL; for local image files, use the local MCP below.
-
-Cursor → Settings → MCP → edit `mcp.json`:
+> Remote MCP does **not** support local `imagePath`. Use a public `image` URL for image-to-3D.
 
 ```json
 {
@@ -39,7 +50,7 @@ Cursor → Settings → MCP → edit `mcp.json`:
     "gomodelhub-3d": {
       "url": "https://login.gomodelhub.com/mcp/3d",
       "headers": {
-        "Authorization": "Bearer gk-your-platform-key",
+        "Authorization": "Bearer gk-your-key",
         "X-GoModelHub-Default-Model": "hyper3d"
       }
     }
@@ -53,7 +64,7 @@ See [`examples/mcp.remote.json`](./examples/mcp.remote.json).
 
 ## Option 2: Local MCP (supports imagePath)
 
-### 1. Install (one-time per machine)
+### Install
 
 ```bash
 git clone https://github.com/kelouer/GoModelHub-MCP.git
@@ -62,12 +73,18 @@ npm install
 npm install -g .
 ```
 
-Windows: `powershell -ExecutionPolicy Bypass -File scripts/install-global.ps1`  
-macOS/Linux: `bash scripts/install-global.sh`
+<details>
+<summary>Alternative install scripts</summary>
+
+| OS | Command |
+|:---|:--------|
+| Windows | `powershell -ExecutionPolicy Bypass -File scripts/install-global.ps1` |
+| macOS / Linux | `bash scripts/install-global.sh` |
 
 Verify: `where gomodelhub-3d-mcp` (Windows) or `which gomodelhub-3d-mcp`.
+</details>
 
-### 2. Configure
+### Configure
 
 ```json
 {
@@ -76,7 +93,7 @@ Verify: `where gomodelhub-3d-mcp` (Windows) or `which gomodelhub-3d-mcp`.
       "command": "gomodelhub-3d-mcp",
       "env": {
         "GOMODELHUB_BASE_URL": "https://login.gomodelhub.com",
-        "GOMODELHUB_API_KEY": "gk-your-platform-key",
+        "GOMODELHUB_API_KEY": "gk-your-key",
         "GOMODELHUB_DEFAULT_MODEL": "hyper3d"
       }
     }
@@ -84,26 +101,22 @@ Verify: `where gomodelhub-3d-mcp` (Windows) or `which gomodelhub-3d-mcp`.
 }
 ```
 
-See [`examples/mcp.local.json`](./examples/mcp.local.json). Save and **Refresh** in the MCP panel.
+See [`examples/mcp.local.json`](./examples/mcp.local.json). Save and **Refresh**.
 
-### 3. Local image (image-to-3D)
+### Local image-to-3D
 
 ```json
-{
-  "model": "v3.1-20260211",
-  "imagePath": "D:/photos/chair.jpg",
-  "mode": "image"
-}
+{ "model": "v3.1-20260211", "imagePath": "D:/photos/chair.jpg", "mode": "image" }
 ```
 
-Supports jpg / png / webp, max 50MB per file.
+Supports jpg / png / webp, max 50MB.
 
 ---
 
 ## Comparison
 
 | | Remote MCP | Local MCP |
-|--|------------|-----------|
+|:--|:-----------|:----------|
 | Install | None | `npm install -g .` |
 | Text-to-3D | ✅ | ✅ |
 | Public `image` URL | ✅ | ✅ |
@@ -114,12 +127,14 @@ Supports jpg / png / webp, max 50MB per file.
 ## Troubleshooting
 
 | Symptom | Fix |
-|---------|-----|
-| disconnected | Run global install; ensure `gomodelhub-3d-mcp` is on PATH |
-| Missing GOMODELHUB_BASE_URL | Check `env` in `mcp.json` |
-| model is required | Add `GOMODELHUB_DEFAULT_MODEL` / `X-GoModelHub-Default-Model`, or pass `model` in the tool call |
+|:--------|:----|
+| `disconnected` | Ensure `gomodelhub-3d-mcp` is on PATH |
+| `Missing GOMODELHUB_BASE_URL` | Check `env` in `mcp.json` |
+| `model is required` | Set default model or pass `model` in the call |
 | HTTP 401 / 403 | Invalid key or insufficient quota |
-| Remote image-to-3D fails | Do not use `imagePath`; use public `image` URL or local MCP |
+| Remote image-to-3D fails | Use public `image` URL or local MCP |
+
+---
 
 ## License
 
